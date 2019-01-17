@@ -2147,8 +2147,8 @@ in OT</th>
 `;
 
 // start alasql
-var alasql = require('alasql');
-var games = new alasql.Database('games');
+const alasql = require('alasql');
+new alasql.Database('games');
 //   'CREATE TABLE boys (team string, date string, homeAway string, wL string, homeScore number, awayScore number, opponent string)'
 alasql(
   'CREATE TABLE boys (team string, date string, homeAway string, w number, l number, homeScore number, awayScore number, opponent string)'
@@ -2164,10 +2164,8 @@ let currentRow = 0; // <tr>
 let currentTh = 0; // <th>
 
 let rowData = [];
-let allBoys = [];
-let allGirls = [];
-
 let error = 0;
+
 // Push rows that cause error here.
 let errorRows = [];
 
@@ -2192,9 +2190,6 @@ data.split('\n').forEach((line, index) => {
         .split(' ')
         .map(n => n.slice(0, 1).toUpperCase() + n.slice(1))
         .join(' ');
-
-      allBoys.push(currentBoys);
-      allGirls.push(currentGirls);
     }
 
     // There is a row with length of 9 that is something like the nav menu - ignore it.
