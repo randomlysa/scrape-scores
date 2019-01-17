@@ -2171,27 +2171,41 @@ everything: {
 */
 
 const everything = {};
-let startingRow = false; // change to true once the correct line has been reached.
+
 // Current team.
 let currentBoys, currentGirls;
 let currentRow = 0; // <tr>
 let currentTh = 0; // <th>
 
-let rows = [];
 let rowData = [];
 
 data.split('\n').forEach((line, index) => {
-  // if (index > 100) return;
-  // Ignore everything until we find "BOYS BASKETBALL" or "GIRLS BASKETBALL"
-  // if (line.includes('BOYS BASKETBALL')) startingRow = true;
-  // if ((startingRow = false)) return;
-  // End "ignore everything"
-
   // https://stackoverflow.com/a/5002161/3996097
   const newLine = line.replace(/<\/?[^>]+(>|$)/g, '');
 
   if (line.includes('<tr')) {
-    if (rowData.length > 0) rows.push(rowData);
+    // Rows with 7 items:
+    // want rowData[2] = boys team
+    // want rowData[6] = girls team team
+    if (rowData.length === 7) {
+      currentBoys = rowData[2];
+      currentGirls = rowData[6];
+
+      // Create team object.
+      everything[currentBoys] = {};
+      everything[currentGirls] = {};
+
+      // Create game array on team object.
+      everything[currentBoys]['games'] = [];
+      everything[currentGirls]['games'] = [];
+    }
+
+    // There is a row with length of 9 that is something like the nav menu - ignore it.
+    if (rowData.length === 9 && rowData[0] !== 'HOME') {
+      everything[currentBoys]['games'].push(rowData.slice(0, 3));
+      everything[currentGirls]['games'].push(rowData.slice(5, 8));
+    }
+
     rowData = [];
     currentRow++;
     currentTh = 0;
@@ -2209,15 +2223,6 @@ data.split('\n').forEach((line, index) => {
   if (line.includes('<th') || line.includes('<td')) {
     rowData.push(newLine.trim());
   }
-
-  // if (newLine.includes('BOYS')) {
-  //   currentBoys = newLine.trim();
-  // }
-
-  // if (newLine.includes('GIRLS')) {
-  //   currentGirls = newLine.trim();
-  // }
-  // console.log(currentBoys, currentGirls);
 });
 
-console.log(rows);
+console.log(everything);
