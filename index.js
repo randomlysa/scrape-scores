@@ -2151,10 +2151,10 @@ var alasql = require('alasql');
 var games = new alasql.Database('games');
 //   'CREATE TABLE boys (team string, date string, homeAway string, wL string, homeScore number, awayScore number, opponent string)'
 alasql(
-  'CREATE TABLE boys (team string, date string, homeAway string, wL string, homeScore number, awayScore number, opponent string)'
+  'CREATE TABLE boys (team string, date string, homeAway string, w number, l number, homeScore number, awayScore number, opponent string)'
 );
 alasql(
-  'CREATE TABLE girls (team string, date string, homeAway string, wL string, homeScore number, awayScore number, opponent string)'
+  'CREATE TABLE girls (team string, date string, homeAway string, w number, l number, homeScore number, awayScore number, opponent string)'
 );
 // end alasql
 
@@ -2211,13 +2211,14 @@ data.split('\n').forEach((line, index) => {
           let team = currentBoys;
           let date = boys[0];
           let homeAway = boys[1];
-          let wL = boys[2].split(' ')[0];
+          let w = boys[2].split(' ')[0] === 'W' ? 1 : 0;
+          let l = boys[2].split(' ')[0] === 'L' ? 1 : 0;
           let homeScore = boys[2].split(' ')[1].split('-')[0];
           let awayScore = boys[2].split(' ')[1].split('-')[1];
           let opponent = opponentFinal;
           // `INSERT INTO boys VALUES ('${team}', ${date}, ${homeAway}, ${wL}, ${homeScore}, ${awayScore}, ${opponent})`
           alasql(`
-            INSERT INTO boys VALUES ('${team}', '${date}', '${homeAway}', '${wL}', ${homeScore}, ${awayScore}, '${opponent}')
+            INSERT INTO boys VALUES ('${team}', '${date}', '${homeAway}', ${w}, ${l}, ${homeScore}, ${awayScore}, '${opponent}')
           `);
         } else {
           error++;
@@ -2234,13 +2235,14 @@ data.split('\n').forEach((line, index) => {
           let team = currentGirls;
           let date = girls[0];
           let homeAway = girls[1];
-          let wL = girls[2].split(' ')[0];
+          let w = girls[2].split(' ')[0] === 'W' ? 1 : 0;
+          let l = girls[2].split(' ')[0] === 'L' ? 1 : 0;
           let homeScore = girls[2].split(' ')[1].split('-')[0];
           let awayScore = girls[2].split(' ')[1].split('-')[1];
           let opponent = opponentFinal;
 
           alasql(`
-            INSERT INTO girls VALUES ('${team}', '${date}', '${homeAway}', '${wL}', ${homeScore}, ${awayScore}, '${opponent}')
+            INSERT INTO girls VALUES ('${team}', '${date}', '${homeAway}', ${w}, ${l}, ${homeScore}, ${awayScore}, '${opponent}')
           `);
         } else {
           error++;
