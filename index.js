@@ -2146,12 +2146,13 @@ in OT</th>
 </table>
 `;
 
-let Datastore = require('nedb');
+const Datastore = require('nedb-promises');
+
 let gamesBoys = new Datastore();
 let gamesGirls = new Datastore();
 
-// const resultsBoys = db.addCollection('resultsBoys');
-// const resultsGirls = db.addCollection('resultsGirls');
+const resultsBoys = new Datastore();
+const resultsGirls = new Datastore();
 
 // Current team.
 let currentBoys, currentGirls;
@@ -2159,6 +2160,8 @@ let currentRow = 0; // <tr>
 let currentTh = 0; // <th>
 
 let rowData = [];
+let allBoys = [];
+let allGirls = [];
 
 let error = 0;
 // Push rows that cause error here.
@@ -2185,6 +2188,9 @@ data.split('\n').forEach((line, index) => {
         .split(' ')
         .map(n => n.slice(0, 1).toUpperCase() + n.slice(1))
         .join(' ');
+
+      allBoys.push(currentBoys);
+      allGirls.push(currentGirls);
     }
 
     // There is a row with length of 9 that is something like the nav menu - ignore it.
@@ -2256,6 +2262,25 @@ data.split('\n').forEach((line, index) => {
   }
 });
 
-gamesBoys.find({ team: 'Chisago Boys', wL: 'W' }, (err, docs) =>
-  console.log(docs)
-);
+const insertRows = async () => {
+  await allBoys.forEach(async team => {
+    let w = await gamesBoys.count({ team: team, wL: 'W' });
+    let l = await gamesBoys.count({ team: team, wL: 'L' });
+    // console.log('insert', team, w, l);
+    resultsBoys.insert({ team: team, w: w, l: l });
+  });
+};
+
+insertRows().then(() => {
+  resultsBoys
+    .find()
+    .sort({ w: -1 })
+    .then(x => console.log(x));
+});
+
+window.setTimeout(() => {
+  resultsBoys
+    .find()
+    .sort({ w: -1 })
+    .then(x => console.log(x));
+}, 550);
