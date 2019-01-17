@@ -2146,13 +2146,17 @@ in OT</th>
 </table>
 `;
 
-const Datastore = require('nedb-promises');
-
-let gamesBoys = new Datastore();
-let gamesGirls = new Datastore();
-
-const resultsBoys = new Datastore();
-const resultsGirls = new Datastore();
+// start alasql
+var alasql = require('alasql');
+var games = new alasql.Database('games');
+//   'CREATE TABLE boys (team string, date string, homeAway string, wL string, homeScore number, awayScore number, opponent string)'
+alasql(
+  'CREATE TABLE boys (team string, date string, homeAway string, wL string, homeScore number, awayScore number, opponent string)'
+);
+alasql(
+  'CREATE TABLE girls (team string, date string, homeAway string, wL string, homeScore number, awayScore number, opponent string)'
+);
+// end alasql
 
 // Current team.
 let currentBoys, currentGirls;
@@ -2203,17 +2207,18 @@ data.split('\n').forEach((line, index) => {
         if (opponent[0] === '@') opponentFinal = opponent.slice(1);
         if (opponent[0] === 'v') opponentFinal = opponent.slice(4);
 
-        // Loki
         if (boys[2].includes('-')) {
-          gamesBoys.insert({
-            team: currentBoys,
-            date: boys[0],
-            homeAway: boys[1],
-            wL: boys[2].split(' ')[0],
-            homeScore: boys[2].split(' ')[1].split('-')[0],
-            awayScore: boys[2].split(' ')[1].split('-')[1],
-            opponent: opponentFinal
-          });
+          let team = currentBoys;
+          let date = boys[0];
+          let homeAway = boys[1];
+          let wL = boys[2].split(' ')[0];
+          let homeScore = boys[2].split(' ')[1].split('-')[0];
+          let awayScore = boys[2].split(' ')[1].split('-')[1];
+          let opponent = opponentFinal;
+          // `INSERT INTO boys VALUES ('${team}', ${date}, ${homeAway}, ${wL}, ${homeScore}, ${awayScore}, ${opponent})`
+          alasql(`
+            INSERT INTO boys VALUES ('${team}', '${date}', '${homeAway}', '${wL}', ${homeScore}, ${awayScore}, '${opponent}')
+          `);
         } else {
           error++;
           errorRows.push(girls);
@@ -2225,17 +2230,18 @@ data.split('\n').forEach((line, index) => {
         if (opponent[0] === '@') opponentFinal = opponent.slice(1);
         if (opponent[0] === 'v') opponentFinal = opponent.slice(4);
 
-        // Loki
         if (girls[2].includes('-')) {
-          gamesGirls.insert({
-            team: currentGirls,
-            date: girls[0],
-            homeAway: girls[1],
-            wL: girls[2].split(' ')[0],
-            homeScore: girls[2].split(' ')[1].split('-')[0],
-            awayScore: girls[2].split(' ')[1].split('-')[1],
-            opponent: opponentFinal
-          });
+          let team = currentGirls;
+          let date = girls[0];
+          let homeAway = girls[1];
+          let wL = girls[2].split(' ')[0];
+          let homeScore = girls[2].split(' ')[1].split('-')[0];
+          let awayScore = girls[2].split(' ')[1].split('-')[1];
+          let opponent = opponentFinal;
+
+          alasql(`
+            INSERT INTO girls VALUES ('${team}', '${date}', '${homeAway}', '${wL}', ${homeScore}, ${awayScore}, '${opponent}')
+          `);
         } else {
           error++;
           errorRows.push(girls);
@@ -2262,6 +2268,7 @@ data.split('\n').forEach((line, index) => {
   }
 });
 
+/*
 const insert = new Promise(function(resolve, reject) {
   allBoys.forEach(async team => {
     let w = await gamesBoys.count({ team: team, wL: 'W' });
@@ -2277,15 +2284,7 @@ const insert = new Promise(function(resolve, reject) {
     resolve();
   });
 });
+*/
 
-insert.then(() => {
-  resultsBoys
-    .find()
-    .sort({ w: -1 })
-    .then(x => console.log(x));
-
-  resultsGirls
-    .find()
-    .sort({ w: -1 })
-    .then(x => console.log(x));
-});
+var res = alasql('SELECT * FROM boys');
+console.warn(res);
