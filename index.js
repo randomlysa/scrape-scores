@@ -2271,18 +2271,25 @@ data.split('\n').forEach((line, index) => {
 });
 
 // 'CREATE TABLE boys (team , date , homeAway , wL , homeScore , awayScore , opponent )'
-const boysTable = alasql(
-  'SELECT team, SUM(w) as wins, SUM(l) as losses FROM boys GROUP BY team ORDER BY wins DESC'
-);
-const boysElement = document.querySelector('#boys');
+['boys', 'girls'].forEach(j => {
+  // DB
+  const query = `SELECT team, SUM(w) as wins, SUM(l) as losses FROM ${j} GROUP BY team ORDER BY wins DESC`;
+  const results = alasql(query);
 
-boysTable.forEach(line => {
-  let tr = document.createElement('tr');
-  tr.innerHTML = `<td>${line.team}</td><td>${line.wins}</td><td>${
-    line.losses
-  }</td>`;
+  // Select element
+  const selector = '#' + j;
+  const tableElement = document.querySelector(selector);
 
-  boysElement.appendChild(tr);
+  // Create and insert HTML using DB results.
+  results.forEach(line => {
+    let tr = document.createElement('tr');
+    tr.innerHTML = `
+    <td>${line.team}</td>
+    <td>${line.wins}</td>
+    <td>${line.losses}</td>`;
+
+    tableElement.appendChild(tr);
+  });
 });
 
 // maybe later, work on above first.
