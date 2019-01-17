@@ -2288,5 +2288,44 @@ const insert = new Promise(function(resolve, reject) {
 });
 */
 
-var res = alasql('SELECT * FROM boys');
-console.warn(res);
+// 'CREATE TABLE boys (team , date , homeAway , wL , homeScore , awayScore , opponent )'
+const boysTable = alasql(
+  'SELECT team, SUM(w) as wins, SUM(l) as losses FROM boys GROUP BY team ORDER BY wins DESC'
+);
+const boysElement = document.querySelector('#boys');
+
+boysTable.forEach(line => {
+  let tr = document.createElement('tr');
+  tr.innerHTML = `<td>${line.team}</td><td>${line.wins}</td><td>${
+    line.losses
+  }</td>`;
+
+  boysElement.appendChild(tr);
+});
+
+// maybe later, work on above first.
+return;
+const res3 = alasql(
+  'SELECT team, SUM(homeScore) as pointsAtHome FROM boys WHERE homeAway = "H" GROUP BY team ORDER BY pointsAtHome DESC'
+);
+console.table(res3);
+
+const res4 = alasql(
+  'SELECT team, SUM(awayScore) as pointsAway FROM boys WHERE homeAway = "A" GROUP BY team ORDER BY pointsAway DESC'
+);
+console.table(res4);
+
+const res5 = alasql(
+  'SELECT team, SUM(w) as homeWins FROM boys WHERE homeAway = "H" and w = 1 GROUP BY team ORDER BY homeWins DESC'
+);
+console.table(res5);
+
+const res6 = alasql(
+  'SELECT team, SUM(w) as awayWins FROM boys WHERE homeAway = "A" and w = 1 GROUP BY team ORDER BY awayWins DESC'
+);
+console.table(res6);
+
+const res7 = alasql(
+  'SELECT team, SUM(w) as awayWins FROM boys WHERE homeAway = "A" and w = 1 GROUP BY team ORDER BY awayWins DESC'
+);
+console.table(res7);
