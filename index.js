@@ -2170,8 +2170,18 @@ data.split('\n').forEach((line, index) => {
     // want rowData[2] = boys team
     // want rowData[6] = girls team team
     if (rowData.length === 7) {
-      currentBoys = rowData[2];
-      currentGirls = rowData[6];
+      currentBoys = rowData[2]
+        .toLowerCase()
+        .split(' ')
+        .map(n => n.slice(0, 1).toUpperCase() + n.slice(1))
+        .join(' ');
+
+      currentGirls = rowData[6]
+        .toLowerCase()
+        .toLowerCase()
+        .split(' ')
+        .map(n => n.slice(0, 1).toUpperCase() + n.slice(1))
+        .join(' ');
     }
 
     // There is a row with length of 9 that is something like the nav menu - ignore it.
