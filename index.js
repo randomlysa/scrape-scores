@@ -2202,8 +2202,14 @@ data.split('\n').forEach((line, index) => {
 
     // There is a row with length of 9 that is something like the nav menu - ignore it.
     if (rowData.length === 9 && rowData[0] !== 'HOME') {
-      everything[currentBoys]['games'].push(rowData.slice(0, 3));
-      everything[currentGirls]['games'].push(rowData.slice(5, 8));
+      const boys = rowData.slice(0, 3);
+      const girls = rowData.slice(5, 8);
+      if (!boys[0].includes('&nbsp;')) {
+        everything[currentBoys]['games'].push(boys);
+      }
+      if (!girls[0].includes('&nbsp;')) {
+        everything[currentGirls]['games'].push(girls);
+      }
     }
 
     rowData = [];
