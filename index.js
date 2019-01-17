@@ -2159,7 +2159,7 @@ alasql(
 // end alasql
 
 // Current team.
-let currentBoys, currentGirls;
+let currentTeam = [];
 let currentRow = 0; // <tr>
 let currentTh = 0; // <th>
 
@@ -2178,13 +2178,13 @@ data.split('\n').forEach((line, index) => {
     // want rowData[2] = boys team
     // want rowData[6] = girls team team
     if (rowData.length === 7) {
-      currentBoys = rowData[2]
+      currentTeam['boys'] = rowData[2]
         .toLowerCase()
         .split(' ')
         .map(n => n.slice(0, 1).toUpperCase() + n.slice(1))
         .join(' ');
 
-      currentGirls = rowData[6]
+      currentTeam['girls'] = rowData[6]
         .toLowerCase()
         .toLowerCase()
         .split(' ')
@@ -2194,56 +2194,37 @@ data.split('\n').forEach((line, index) => {
 
     // There is a row with length of 9 that is something like the nav menu - ignore it.
     if (rowData.length === 9 && rowData[0] !== 'HOME') {
-      const boys = rowData.slice(0, 4);
-      const girls = rowData.slice(5, 9);
-      if (!boys[0].includes('&nbsp;')) {
-        let opponentFinal;
-        let opponent = boys[3];
-        if (opponent[0] === '@') opponentFinal = opponent.slice(1);
-        if (opponent[0] === 'v') opponentFinal = opponent.slice(4);
+      ['boys', 'girls'].forEach(j => {
+        let finalRowData;
+        if (j === 'boys') finalRowData = rowData.slice(0, 4);
+        if (j === 'girls') finalRowData = rowData.slice(5, 9);
 
-        if (boys[2].includes('-')) {
-          let team = currentBoys;
-          let date = boys[0];
-          let homeAway = boys[1];
-          let w = boys[2].split(' ')[0] === 'W' ? 1 : 0;
-          let l = boys[2].split(' ')[0] === 'L' ? 1 : 0;
-          let homeScore = boys[2].split(' ')[1].split('-')[0];
-          let awayScore = boys[2].split(' ')[1].split('-')[1];
-          let opponent = opponentFinal;
-          // `INSERT INTO boys VALUES ('${team}', ${date}, ${homeAway}, ${wL}, ${homeScore}, ${awayScore}, ${opponent})`
-          alasql(`
-            INSERT INTO boys VALUES ('${team}', '${date}', '${homeAway}', ${w}, ${l}, ${homeScore}, ${awayScore}, '${opponent}')
+        if (!finalRowData[0].includes('&nbsp;')) {
+          let opponentFinal;
+          let opponent = finalRowData[3];
+          if (opponent[0] === '@') opponentFinal = opponent.slice(1);
+          if (opponent[0] === 'v') opponentFinal = opponent.slice(4);
+
+          if (finalRowData[2].includes('-')) {
+            let team = currentTeam[j];
+            let date = finalRowData[0];
+            let homeAway = finalRowData[1];
+            let w = finalRowData[2].split(' ')[0] === 'W' ? 1 : 0;
+            let l = finalRowData[2].split(' ')[0] === 'L' ? 1 : 0;
+            let homeScore = finalRowData[2].split(' ')[1].split('-')[0];
+            let awayScore = finalRowData[2].split(' ')[1].split('-')[1];
+            let opponent = opponentFinal;
+            // `INSERT INTO boys VALUES ('${team}', ${date}, ${homeAway}, ${wL}, ${homeScore}, ${awayScore}, ${opponent})`
+            alasql(`
+            INSERT INTO ${j} VALUES ('${team}', '${date}', '${homeAway}', ${w}, ${l}, ${homeScore}, ${awayScore}, '${opponent}')
           `);
-        } else {
-          error++;
-          errorRows.push(girls);
+          } else {
+            error++;
+            // Log rows that don't fit. Use to check if the wrong rows are getting skipped.
+            errorRows.push(finalRowData);
+          }
         }
-      }
-      if (!girls[0].includes('&nbsp;')) {
-        let opponentFinal;
-        let opponent = girls[3];
-        if (opponent[0] === '@') opponentFinal = opponent.slice(1);
-        if (opponent[0] === 'v') opponentFinal = opponent.slice(4);
-
-        if (girls[2].includes('-')) {
-          let team = currentGirls;
-          let date = girls[0];
-          let homeAway = girls[1];
-          let w = girls[2].split(' ')[0] === 'W' ? 1 : 0;
-          let l = girls[2].split(' ')[0] === 'L' ? 1 : 0;
-          let homeScore = girls[2].split(' ')[1].split('-')[0];
-          let awayScore = girls[2].split(' ')[1].split('-')[1];
-          let opponent = opponentFinal;
-
-          alasql(`
-            INSERT INTO girls VALUES ('${team}', '${date}', '${homeAway}', ${w}, ${l}, ${homeScore}, ${awayScore}, '${opponent}')
-          `);
-        } else {
-          error++;
-          errorRows.push(girls);
-        }
-      }
+      });
     }
 
     rowData = [];
