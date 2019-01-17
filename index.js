@@ -2146,9 +2146,12 @@ in OT</th>
 </table>
 `;
 
-const db = new loki('scores.db');
-const gamesBoys = db.addCollection('gamesBoys');
-const gamesGirls = db.addCollection('gamesGirls');
+let Datastore = require('nedb');
+let gamesBoys = new Datastore();
+let gamesGirls = new Datastore();
+
+// const resultsBoys = db.addCollection('resultsBoys');
+// const resultsGirls = db.addCollection('resultsGirls');
 
 // Current team.
 let currentBoys, currentGirls;
@@ -2253,7 +2256,6 @@ data.split('\n').forEach((line, index) => {
   }
 });
 
-var results = gamesBoys.find({});
-var results2 = gamesGirls.find({});
-console.log(results);
-console.log(results2);
+gamesBoys.find({ team: 'Chisago Boys', wL: 'W' }, (err, docs) =>
+  console.log(docs)
+);
