@@ -2270,24 +2270,6 @@ data.split('\n').forEach((line, index) => {
   }
 });
 
-/*
-const insert = new Promise(function(resolve, reject) {
-  allBoys.forEach(async team => {
-    let w = await gamesBoys.count({ team: team, wL: 'W' });
-    let l = await gamesBoys.count({ team: team, wL: 'L' });
-    // console.log('insert', team, w, l);
-    resultsBoys.insert({ team: team, w: w, l: l });
-  });
-  allGirls.forEach(async team => {
-    let w = await gamesGirls.count({ team: team, wL: 'W' });
-    let l = await gamesGirls.count({ team: team, wL: 'L' });
-    // console.log('insert', team, w, l);
-    resultsGirls.insert({ team: team, w: w, l: l });
-    resolve();
-  });
-});
-*/
-
 // 'CREATE TABLE boys (team , date , homeAway , wL , homeScore , awayScore , opponent )'
 const boysTable = alasql(
   'SELECT team, SUM(w) as wins, SUM(l) as losses FROM boys GROUP BY team ORDER BY wins DESC'
