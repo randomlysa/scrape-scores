@@ -2177,8 +2177,11 @@ let currentBoys, currentGirls;
 let currentRow = 0; // <tr>
 let currentTh = 0; // <th>
 
+let rows = [];
+let rowData = [];
+
 data.split('\n').forEach((line, index) => {
-  if (index > 100) return;
+  // if (index > 100) return;
   // Ignore everything until we find "BOYS BASKETBALL" or "GIRLS BASKETBALL"
   // if (line.includes('BOYS BASKETBALL')) startingRow = true;
   // if ((startingRow = false)) return;
@@ -2188,25 +2191,23 @@ data.split('\n').forEach((line, index) => {
   const newLine = line.replace(/<\/?[^>]+(>|$)/g, '');
 
   if (line.includes('<tr')) {
+    if (rowData.length > 0) rows.push(rowData);
+    rowData = [];
     currentRow++;
     currentTh = 0;
-    console.log(currentRow, ' - ROW');
   }
 
   // Each tr has 9 th. th 1-4 = boys, th 6-9 = girls;
-  else if (line.includes('<th')) {
-    // TH 2 has the boys team name.
-    if (currentTh === 2 && line.includes(' BOYS')) {
-      currentBoys = newLine;
-      console.warn('BOYS TEAM:', newLine);
-    }
-    // TH 6 has the girls teams name.
-    if (currentTh === 6 && line.includes(' GIRLS')) {
-      currentGirls = newLine;
-      console.warn('GIRLS TEAM:', newLine);
-    }
-    console.log(newLine, currentTh, ' - TH');
-    currentTh++;
+  // th:
+  // 0 - date
+  // 1 - home / away (H || A)
+  // 2 - W/L Score (L 46-49)
+  // 3 - opponent ( vs. ABC)
+  // 4 - EMPTY (&nbsp;)
+  //
+
+  if (line.includes('<th') || line.includes('<td')) {
+    rowData.push(newLine.trim());
   }
 
   // if (newLine.includes('BOYS')) {
@@ -2218,3 +2219,5 @@ data.split('\n').forEach((line, index) => {
   // }
   // console.log(currentBoys, currentGirls);
 });
+
+console.log(rows);
