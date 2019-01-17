@@ -2262,25 +2262,30 @@ data.split('\n').forEach((line, index) => {
   }
 });
 
-const insertRows = async () => {
-  await allBoys.forEach(async team => {
+const insert = new Promise(function(resolve, reject) {
+  allBoys.forEach(async team => {
     let w = await gamesBoys.count({ team: team, wL: 'W' });
     let l = await gamesBoys.count({ team: team, wL: 'L' });
     // console.log('insert', team, w, l);
     resultsBoys.insert({ team: team, w: w, l: l });
   });
-};
+  allGirls.forEach(async team => {
+    let w = await gamesGirls.count({ team: team, wL: 'W' });
+    let l = await gamesGirls.count({ team: team, wL: 'L' });
+    // console.log('insert', team, w, l);
+    resultsGirls.insert({ team: team, w: w, l: l });
+    resolve();
+  });
+});
 
-insertRows().then(() => {
+insert.then(() => {
   resultsBoys
+    .find()
+    .sort({ w: -1 })
+    .then(x => console.log(x));
+
+  resultsGirls
     .find()
     .sort({ w: -1 })
     .then(x => console.log(x));
 });
-
-window.setTimeout(() => {
-  resultsBoys
-    .find()
-    .sort({ w: -1 })
-    .then(x => console.log(x));
-}, 550);
