@@ -2146,31 +2146,9 @@ in OT</th>
 </table>
 `;
 
-/* Structure:
-everything: {
-  team1: {
-    games: [
-      0: {
-          date: '12/7',
-          homeAway: 'H',
-          wonLost: 'W',
-          score: '46-49'
-          opponent: 'vs Prior Lake'
-        }
-      1: {
-          date: '12/7',
-          homeAway: 'H',
-          wonLost: 'W',
-          score: '46-49'
-          opponent: 'vs Prior Lake'
-        }
-    ]
-  }
-}
-
-*/
-
-const everything = {};
+const db = new loki('scores.db');
+const gamesBoys = db.addCollection('gamesBoys');
+const gamesGirls = db.addCollection('gamesGirls');
 
 // Current team.
 let currentBoys, currentGirls;
@@ -2178,6 +2156,10 @@ let currentRow = 0; // <tr>
 let currentTh = 0; // <th>
 
 let rowData = [];
+
+let error = 0;
+// Push rows that cause error here.
+let errorRows = [];
 
 data.split('\n').forEach((line, index) => {
   // https://stackoverflow.com/a/5002161/3996097
@@ -2190,14 +2172,6 @@ data.split('\n').forEach((line, index) => {
     if (rowData.length === 7) {
       currentBoys = rowData[2];
       currentGirls = rowData[6];
-
-      // Create team object.
-      everything[currentBoys] = {};
-      everything[currentGirls] = {};
-
-      // Create game array on team object.
-      everything[currentBoys]['games'] = [];
-      everything[currentGirls]['games'] = [];
     }
 
     // There is a row with length of 9 that is something like the nav menu - ignore it.
@@ -2205,10 +2179,48 @@ data.split('\n').forEach((line, index) => {
       const boys = rowData.slice(0, 4);
       const girls = rowData.slice(5, 9);
       if (!boys[0].includes('&nbsp;')) {
-        everything[currentBoys]['games'].push(boys);
+        let opponentFinal;
+        let opponent = boys[3];
+        if (opponent[0] === '@') opponentFinal = opponent.slice(1);
+        if (opponent[0] === 'v') opponentFinal = opponent.slice(4);
+
+        // Loki
+        if (boys[2].includes('-')) {
+          gamesBoys.insert({
+            team: currentBoys,
+            date: boys[0],
+            homeAway: boys[1],
+            wL: boys[2].split(' ')[0],
+            homeScore: boys[2].split(' ')[1].split('-')[0],
+            awayScore: boys[2].split(' ')[1].split('-')[1],
+            opponent: opponentFinal
+          });
+        } else {
+          error++;
+          errorRows.push(girls);
+        }
       }
       if (!girls[0].includes('&nbsp;')) {
-        everything[currentGirls]['games'].push(girls);
+        let opponentFinal;
+        let opponent = girls[3];
+        if (opponent[0] === '@') opponentFinal = opponent.slice(1);
+        if (opponent[0] === 'v') opponentFinal = opponent.slice(4);
+
+        // Loki
+        if (girls[2].includes('-')) {
+          gamesGirls.insert({
+            team: currentGirls,
+            date: girls[0],
+            homeAway: girls[1],
+            wL: girls[2].split(' ')[0],
+            homeScore: girls[2].split(' ')[1].split('-')[0],
+            awayScore: girls[2].split(' ')[1].split('-')[1],
+            opponent: opponentFinal
+          });
+        } else {
+          error++;
+          errorRows.push(girls);
+        }
       }
     }
 
@@ -2231,4 +2243,7 @@ data.split('\n').forEach((line, index) => {
   }
 });
 
-console.log(everything);
+var results = gamesBoys.find({});
+var results2 = gamesGirls.find({});
+console.log(results);
+console.log(results2);
