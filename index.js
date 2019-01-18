@@ -127,9 +127,31 @@ fetch('http://localhost:3000/macs')
         `
       );
 
+      // Calc points scored by a team when playing at home vs when playing away
+      const resultsScoredHomeAway = alasql(
+        `WITH
+        scoredAtHome AS (
+          SELECT team, SUM(homeScore) as scoredAtHome FROM ${j} WHERE homeAway = "H" GROUP BY team
+        ),
+        scoredAtAway AS (
+          SELECT team, SUM(homeScore) as scoredAtAway FROM ${j} WHERE homeAway = "A" GROUP BY team
+        )
+        SELECT *
+        FROM scoredAtHome
+        JOIN  scoredAtAway
+        USING team
+        `
+      );
+      console.table(resultsScoredHomeAway);
+
       const joinResults = alasql(
         'SELECT * FROM ? resultsWL JOIN ? resultsPoints USING team ORDER BY resultsWL.wins DESC',
         [resultsWL, resultsPoints]
+      );
+
+      const joinResults2 = alasql(
+        'SELECT * FROM ? joinResults JOIN ? resultsScoredHomeAway USING team',
+        [joinResults, resultsScoredHomeAway]
       );
 
       // Table body. Append to it.
@@ -137,7 +159,7 @@ fetch('http://localhost:3000/macs')
       const tableElement = document.querySelector(selector);
 
       // Create and insert HTML using DB results.
-      joinResults.forEach(line => {
+      joinResults2.forEach(line => {
         let tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${line.team}</td>
@@ -145,6 +167,8 @@ fetch('http://localhost:3000/macs')
           <td>${line.losses}</td>
           <td>${line.homePoints}</td>
           <td>${line.awayPoints}</td>
+          <td>${line.scoredAtHome}</td>
+          <td>${line.scoredAtAway}</td>
         `;
 
         tableElement.appendChild(tr);
