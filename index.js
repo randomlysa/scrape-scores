@@ -110,7 +110,7 @@ fetch('http://localhost:3000/macs')
 
       // WITH
       // '(team , date , homeAway , w number, l , homeScore , awayScore , opponent )'
-      const resultsScores = alasql(
+      const resultsPoints = alasql(
         `WITH
         pointsScored AS (
           SELECT team, SUM(homeScore) as homePoints FROM ${j} GROUP BY team
@@ -125,9 +125,9 @@ fetch('http://localhost:3000/macs')
         `
       );
 
-      const joinWinsAndScores = alasql(
-        'SELECT * FROM ? resultsWL JOIN ? resultsScores USING team',
-        [resultsScores, resultsWL]
+      const joinResults = alasql(
+        'SELECT * FROM ? resultsWL JOIN ? resultsPoints USING team ORDER BY resultsWL.wins DESC',
+        [resultsWL, resultsPoints]
       );
 
       // Select element
@@ -135,7 +135,7 @@ fetch('http://localhost:3000/macs')
       const tableElement = document.querySelector(selector);
 
       // Create and insert HTML using DB results.
-      joinWinsAndScores.forEach(line => {
+      joinResults.forEach(line => {
         let tr = document.createElement('tr');
         tr.innerHTML = `
     <td>${line.team}</td>
