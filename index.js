@@ -1,5 +1,3 @@
-const tablesort = require('tablesort');
-
 fetch('http://localhost:3000/macs')
   .then(things => things.text())
   .then(data => {
@@ -173,7 +171,5 @@ fetch('http://localhost:3000/macs')
 
         tableElement.appendChild(tr);
       });
-
-      tablesort(document.getElementById(j)); // j = boys, girls, which is the table
     });
   }); // fetch.then.then whee
