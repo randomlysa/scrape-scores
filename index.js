@@ -104,8 +104,10 @@ fetch('http://localhost:3000/macs')
     // 'CREATE TABLE boys (team , date , homeAway , wL , homeScore , awayScore , opponent )'
     ['boys', 'girls'].forEach(j => {
       // DB
-      const queryWinsLosses = `SELECT team, SUM(w) as wins, SUM(l) as losses FROM ${j} GROUP BY team ORDER BY wins DESC`;
-      const resultsWL = alasql(queryWinsLosses);
+      const resultsWL = alasql(
+        `SELECT team, SUM(w) as wins, SUM(l) as losses FROM ${j} GROUP BY team`
+      );
+
       // WITH
       // '(team , date , homeAway , w number, l , homeScore , awayScore , opponent )'
       const resultsScores = alasql(
