@@ -104,20 +104,43 @@ fetch('http://localhost:3000/macs')
     // 'CREATE TABLE boys (team , date , homeAway , wL , homeScore , awayScore , opponent )'
     ['boys', 'girls'].forEach(j => {
       // DB
-      const query = `SELECT team, SUM(w) as wins, SUM(l) as losses FROM ${j} GROUP BY team ORDER BY wins DESC`;
-      const results = alasql(query);
+      const queryWinsLosses = `SELECT team, SUM(w) as wins, SUM(l) as losses FROM ${j} GROUP BY team ORDER BY wins DESC`;
+      const resultsWL = alasql(queryWinsLosses);
+      // WITH
+      // '(team , date , homeAway , w number, l , homeScore , awayScore , opponent )'
+      const resultsScores = alasql(
+        `WITH
+        homeScore AS (
+          SELECT team, SUM(homeScore) as homePoints FROM ${j} WHERE homeAway = 'H' GROUP BY team
+        ),
+        awayScore AS (
+          SELECT team, SUM(awayScore) as awayPoints FROM ${j} WHERE homeAway = 'A' GROUP BY team
+        )
+        SELECT *
+        FROM homeScore
+        JOIN  awayScore
+        USING team
+        `
+      );
+
+      const joinWinsAndScores = alasql(
+        'SELECT * FROM ? resultsWL JOIN ? resultsScores USING team',
+        [resultsScores, resultsWL]
+      );
 
       // Select element
       const selector = '#' + j;
       const tableElement = document.querySelector(selector);
 
       // Create and insert HTML using DB results.
-      results.forEach(line => {
+      joinWinsAndScores.forEach(line => {
         let tr = document.createElement('tr');
         tr.innerHTML = `
     <td>${line.team}</td>
     <td>${line.wins}</td>
-    <td>${line.losses}</td>`;
+    <td>${line.losses}</td>
+    <td>${line.homePoints}</td>
+    <td>${line.awayPoints}</td>`;
 
         tableElement.appendChild(tr);
       });
