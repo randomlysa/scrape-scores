@@ -122,31 +122,4 @@ fetch('http://localhost:3000/macs')
         tableElement.appendChild(tr);
       });
     });
-
-    // maybe later, work on above first.
-    return;
-    const res3 = alasql(
-      'SELECT team, SUM(homeScore) as pointsAtHome FROM boys WHERE homeAway = "H" GROUP BY team ORDER BY pointsAtHome DESC'
-    );
-    console.table(res3);
-
-    const res4 = alasql(
-      'SELECT team, SUM(awayScore) as pointsAway FROM boys WHERE homeAway = "A" GROUP BY team ORDER BY pointsAway DESC'
-    );
-    console.table(res4);
-
-    const res5 = alasql(
-      'SELECT team, SUM(w) as homeWins FROM boys WHERE homeAway = "H" and w = 1 GROUP BY team ORDER BY homeWins DESC'
-    );
-    console.table(res5);
-
-    const res6 = alasql(
-      'SELECT team, SUM(w) as awayWins FROM boys WHERE homeAway = "A" and w = 1 GROUP BY team ORDER BY awayWins DESC'
-    );
-    console.table(res6);
-
-    const res7 = alasql(
-      'SELECT team, SUM(w) as awayWins FROM boys WHERE homeAway = "A" and w = 1 GROUP BY team ORDER BY awayWins DESC'
-    );
-    console.table(res7);
   }); // fetch.then.then whee
