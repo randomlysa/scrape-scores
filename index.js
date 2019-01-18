@@ -110,15 +110,15 @@ fetch('http://localhost:3000/macs')
       // '(team , date , homeAway , w number, l , homeScore , awayScore , opponent )'
       const resultsScores = alasql(
         `WITH
-        homeScore AS (
-          SELECT team, SUM(homeScore) as homePoints FROM ${j} WHERE homeAway = 'H' GROUP BY team
+        pointsScored AS (
+          SELECT team, SUM(homeScore) as homePoints FROM ${j} GROUP BY team
         ),
-        awayScore AS (
-          SELECT team, SUM(awayScore) as awayPoints FROM ${j} WHERE homeAway = 'A' GROUP BY team
+        pointsAllowed AS (
+          SELECT team, SUM(awayScore) as awayPoints FROM ${j} GROUP BY team
         )
         SELECT *
-        FROM homeScore
-        JOIN  awayScore
+        FROM pointsScored
+        JOIN  pointsAllowed
         USING team
         `
       );
