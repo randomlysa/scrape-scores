@@ -1,3 +1,5 @@
+const tablesort = require('tablesort');
+
 fetch('http://localhost:3000/macs')
   .then(things => things.text())
   .then(data => {
@@ -130,21 +132,24 @@ fetch('http://localhost:3000/macs')
         [resultsWL, resultsPoints]
       );
 
-      // Select element
-      const selector = '#' + j;
+      // Table body. Append to it.
+      const selector = '#' + j + 'TBody';
       const tableElement = document.querySelector(selector);
 
       // Create and insert HTML using DB results.
       joinResults.forEach(line => {
         let tr = document.createElement('tr');
         tr.innerHTML = `
-    <td>${line.team}</td>
-    <td>${line.wins}</td>
-    <td>${line.losses}</td>
-    <td>${line.homePoints}</td>
-    <td>${line.awayPoints}</td>`;
+          <td>${line.team}</td>
+          <td>${line.wins}</td>
+          <td>${line.losses}</td>
+          <td>${line.homePoints}</td>
+          <td>${line.awayPoints}</td>
+        `;
 
         tableElement.appendChild(tr);
       });
+
+      tablesort(document.getElementById(j)); // j = boys, girls, which is the table
     });
   }); // fetch.then.then whee
