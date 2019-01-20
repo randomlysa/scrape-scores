@@ -51,7 +51,7 @@ const Table = data => {
               accessor: 'homePoints'
             },
             {
-              Header: 'away',
+              Header: 'Away',
               accessor: 'awayPoints'
             }
           ]
