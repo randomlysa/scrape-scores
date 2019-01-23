@@ -39,11 +39,13 @@ const Table = props => {
             {
               Header: 'Wins',
               accessor: 'homeWins',
+              show: props.showExtraCols,
               width: 65
             },
             {
               Header: 'Losses',
               accessor: 'homeLosses',
+              show: props.showExtraCols,
               width: 65
             }
           ]
@@ -54,11 +56,13 @@ const Table = props => {
             {
               Header: 'Wins',
               accessor: 'awayWins',
+              show: props.showExtraCols,
               width: 65
             },
             {
               Header: 'Losses',
               accessor: 'awayLosses',
+              show: props.showExtraCols,
               width: 65
             }
           ]
