@@ -23,11 +23,13 @@ const Table = props => {
           columns: [
             {
               Header: 'Wins',
-              accessor: 'wins'
+              accessor: 'wins',
+              width: 65
             },
             {
               Header: 'Losses',
-              accessor: 'losses'
+              accessor: 'losses',
+              width: 65
             }
           ]
         },
@@ -36,11 +38,13 @@ const Table = props => {
           columns: [
             {
               Header: 'Wins',
-              accessor: 'homeWins'
+              accessor: 'homeWins',
+              width: 65
             },
             {
               Header: 'Losses',
-              accessor: 'homeLosses'
+              accessor: 'homeLosses',
+              width: 65
             }
           ]
         },
@@ -49,11 +53,13 @@ const Table = props => {
           columns: [
             {
               Header: 'Wins',
-              accessor: 'awayWins'
+              accessor: 'awayWins',
+              width: 65
             },
             {
               Header: 'Losses',
-              accessor: 'awayLosses'
+              accessor: 'awayLosses',
+              width: 65
             }
           ]
         },
@@ -64,12 +70,14 @@ const Table = props => {
             {
               Header: 'at Home',
               accessor: 'scoredAtHome',
-              show: props.showExtraCols
+              show: props.showExtraCols,
+              width: 85
             },
             {
               Header: 'Away',
               accessor: 'scoredAtAway',
-              show: props.showExtraCols
+              show: props.showExtraCols,
+              width: 85
             }
           ]
         },
@@ -79,12 +87,14 @@ const Table = props => {
             {
               Header: 'at Home',
               accessor: 'homePoints',
-              show: props.showExtraCols
+              show: props.showExtraCols,
+              width: 85
             },
             {
               Header: 'Away',
               accessor: 'awayPoints',
-              show: props.showExtraCols
+              show: props.showExtraCols,
+              width: 85
             }
           ]
         }
