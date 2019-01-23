@@ -126,6 +126,32 @@ const getData = () => {
         `
         );
 
+        // Calculate home and away records
+        const homeAwayRecords = alasql(
+          `WITH
+        homeWins AS (
+          SELECT team, SUM(w) as homeWins FROM ${j} WHERE homeAway = "H" GROUP BY team
+        ),
+        homeLosses AS (
+          SELECT team, SUM(l) as homeLosses FROM ${j} WHERE homeAway = "H" GROUP BY team
+        ),
+        roadWins AS (
+          SELECT team, SUM(w) as roadWins FROM ${j} WHERE homeAway = "A" GROUP BY team
+        ),
+        roadLosses AS (
+          SELECT team, SUM(l) as roadLosses FROM ${j} WHERE homeAway = "A" GROUP BY team
+        )
+        SELECT *
+        FROM homeWins
+        JOIN  homeLosses
+        USING team
+        JOIN roadWins
+        USING team
+        JOIN roadLosses
+        USING team
+        `
+        );
+
         // Calc points scored by a team when playing at home vs when playing away
         const resultsScoredHomeAway = alasql(
           `WITH
@@ -142,10 +168,17 @@ const getData = () => {
         `
         );
 
+        // Put everything together...
         const joinResults = alasql(
-          'SELECT * FROM ? resultsWL JOIN ? resultsPoints USING team ORDER BY resultsWL.wins DESC',
-          [resultsWL, resultsPoints]
+          `SELECT * FROM ? resultsWL
+          JOIN ? resultsPoints USING team
+          JOIN ? homeAwayRecords USING team
+          ORDER BY resultsWL.wins DESC
+          `,
+          [resultsWL, resultsPoints, homeAwayRecords]
         );
+
+        console.table(joinResults);
 
         const p = new Promise((resolve, reject) => {
           const results = alasql(
