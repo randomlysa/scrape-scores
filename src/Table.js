@@ -86,13 +86,13 @@ const Table = props => {
           columns: [
             {
               Header: 'at Home',
-              accessor: 'homePoints',
+              accessor: 'pointsAllowedHome',
               show: props.showExtraCols,
               width: 85
             },
             {
               Header: 'Away',
-              accessor: 'awayPoints',
+              accessor: 'pointsAllowedAway',
               show: props.showExtraCols,
               width: 85
             }

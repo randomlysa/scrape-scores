@@ -105,23 +105,24 @@ const getData = () => {
       // 'CREATE TABLE boys (team , date , homeAway , wL , homeScore , awayScore , opponent )'
       return ['boys', 'girls'].map(j => {
         // DB
+        // Basic W/L
         const resultsWL = alasql(
           `SELECT team, SUM(w) as wins, SUM(l) as losses FROM ${j} GROUP BY team`
         );
 
-        // WITH
         // '(team , date , homeAway , w number, l , homeScore , awayScore , opponent )'
-        const resultsPoints = alasql(
+        // Points allowed home, away
+        const pointsAllowedHomePointsAllowedAway = alasql(
           `WITH
-        pointsScored AS (
-          SELECT team, SUM(homeScore) as homePoints FROM ${j} WHERE homeAway = "H" GROUP BY team
+        pointsAllowedHome AS (
+          SELECT team, SUM(awayScore) as pointsAllowedHome FROM ${j} WHERE homeAway = "H" GROUP BY team
         ),
-        pointsAllowed AS (
-          SELECT team, SUM(awayScore) as awayPoints FROM ${j} WHERE homeAway = "A" GROUP BY team
+        pointsAllowedAway AS (
+          SELECT team, SUM(awayScore) as pointsAllowedAway FROM ${j} WHERE homeAway = "A" GROUP BY team
         )
         SELECT *
-        FROM pointsScored
-        JOIN  pointsAllowed
+        FROM pointsAllowedHome
+        JOIN  pointsAllowedAway
         USING team
         `
         );
@@ -153,7 +154,7 @@ const getData = () => {
         );
 
         // Calc points scored by a team when playing at home vs when playing away
-        const resultsScoredHomeAway = alasql(
+        const scoredAtHomescoredAway = alasql(
           `WITH
         scoredAtHome AS (
           SELECT team, SUM(homeScore) as scoredAtHome FROM ${j} WHERE homeAway = "H" GROUP BY team
@@ -168,21 +169,22 @@ const getData = () => {
         `
         );
 
-        // Put everything together...
-        const joinResults = alasql(
-          `SELECT * FROM ? resultsWL
-          JOIN ? resultsPoints USING team
-          JOIN ? homeAwayRecords USING team
-          ORDER BY resultsWL.wins DESC
-          `,
-          [resultsWL, resultsPoints, homeAwayRecords]
-        );
-
         const p = new Promise((resolve, reject) => {
           const results = alasql(
-            'SELECT * FROM ? joinResults JOIN ? resultsScoredHomeAway USING team',
-            [joinResults, resultsScoredHomeAway]
+            `SELECT * FROM ? resultsWL
+            JOIN ? pointsAllowedHomePointsAllowedAway USING team
+            JOIN ? homeAwayRecords USING team
+            JOIN ? scoredAtHomescoredAway USING team
+            ORDER BY resultsWL.wins DESC
+            `,
+            [
+              resultsWL,
+              pointsAllowedHomePointsAllowedAway,
+              homeAwayRecords,
+              scoredAtHomescoredAway
+            ]
           );
+
           resolve(results);
         });
 
