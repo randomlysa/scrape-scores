@@ -32,6 +32,32 @@ const Table = props => {
           ]
         },
         {
+          Header: 'Home Record',
+          columns: [
+            {
+              Header: 'Wins',
+              accessor: 'homeWins'
+            },
+            {
+              Header: 'Losses',
+              accessor: 'homeLosses'
+            }
+          ]
+        },
+        {
+          Header: 'Away Record',
+          columns: [
+            {
+              Header: 'Wins',
+              accessor: 'awayWins'
+            },
+            {
+              Header: 'Losses',
+              accessor: 'awayLosses'
+            }
+          ]
+        },
+        {
           Header: 'Points Scored',
 
           columns: [
