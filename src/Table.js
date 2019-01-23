@@ -11,7 +11,6 @@ const Table = props => {
       data={props.data}
       columns={[
         {
-          Header: 'Put Boys/Girls Here?',
           columns: [
             {
               Header: 'Team',
