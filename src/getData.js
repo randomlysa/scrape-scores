@@ -135,19 +135,19 @@ const getData = () => {
         homeLosses AS (
           SELECT team, SUM(l) as homeLosses FROM ${j} WHERE homeAway = "H" GROUP BY team
         ),
-        roadWins AS (
-          SELECT team, SUM(w) as roadWins FROM ${j} WHERE homeAway = "A" GROUP BY team
+        awayWins AS (
+          SELECT team, SUM(w) as awayWins FROM ${j} WHERE homeAway = "A" GROUP BY team
         ),
-        roadLosses AS (
-          SELECT team, SUM(l) as roadLosses FROM ${j} WHERE homeAway = "A" GROUP BY team
+        awayLosses AS (
+          SELECT team, SUM(l) as awayLosses FROM ${j} WHERE homeAway = "A" GROUP BY team
         )
         SELECT *
         FROM homeWins
         JOIN  homeLosses
         USING team
-        JOIN roadWins
+        JOIN awayWins
         USING team
-        JOIN roadLosses
+        JOIN awayLosses
         USING team
         `
         );
@@ -177,8 +177,6 @@ const getData = () => {
           `,
           [resultsWL, resultsPoints, homeAwayRecords]
         );
-
-        console.table(joinResults);
 
         const p = new Promise((resolve, reject) => {
           const results = alasql(
