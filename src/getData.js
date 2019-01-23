@@ -114,10 +114,10 @@ const getData = () => {
         const resultsPoints = alasql(
           `WITH
         pointsScored AS (
-          SELECT team, SUM(homeScore) as homePoints FROM ${j} GROUP BY team
+          SELECT team, SUM(homeScore) as homePoints FROM ${j} WHERE homeAway = "H" GROUP BY team
         ),
         pointsAllowed AS (
-          SELECT team, SUM(awayScore) as awayPoints FROM ${j} GROUP BY team
+          SELECT team, SUM(awayScore) as awayPoints FROM ${j} WHERE homeAway = "A" GROUP BY team
         )
         SELECT *
         FROM pointsScored
