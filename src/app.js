@@ -11,34 +11,50 @@ class App extends React.Component {
     super();
     this.state = {
       showExtraCols: false,
-      data: []
+      display: 'boys',
+      boys: [],
+      girls: []
     };
 
     this.toggleExtraCols = this.toggleExtraCols.bind(this);
+    this.toggleBG = this.toggleBG.bind(this);
   }
 
   toggleExtraCols() {
     this.setState({ showExtraCols: !this.state.showExtraCols });
   }
 
+  toggleBG() {
+    if (this.state.display === 'boys') this.setState({ display: 'girls' });
+    else this.setState({ display: 'boys' });
+  }
+
   componentDidMount() {
     const data = getData();
     data.then(d => {
       d.forEach(item => {
+        // which is either 'boys' or 'girls'
         const which = Object.keys(item);
+
         item[which].then(data => {
-          this.setState({ data });
+          // set data to this.state.boys or this.state.girls
+          this.setState({ [which[0]]: data });
         });
       });
     });
   }
 
   render() {
-    const { data } = this.state;
+    // data is either for boys or girls
+    const data = this.state[this.state.display];
+
     if (data.length > 0) {
       return (
         <div>
-          <Header toggleExtraCols={this.toggleExtraCols} />
+          <Header
+            toggleBG={this.toggleBG}
+            toggleExtraCols={this.toggleExtraCols}
+          />
           <Table data={data} showExtraCols={this.state.showExtraCols} />
         </div>
       );
