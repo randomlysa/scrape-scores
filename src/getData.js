@@ -172,9 +172,9 @@ const getData = () => {
         const p = new Promise((resolve, reject) => {
           const results = alasql(
             `SELECT * FROM ? resultsWL
-            JOIN ? pointsAllowedHomePointsAllowedAway USING team
-            JOIN ? homeAwayRecords USING team
-            JOIN ? scoredAtHomescoredAway USING team
+            LEFT JOIN ? pointsAllowedHomePointsAllowedAway USING team
+            LEFT JOIN ? homeAwayRecords USING team
+            LEFT JOIN ? scoredAtHomescoredAway USING team
             ORDER BY resultsWL.wins DESC
             `,
             [
