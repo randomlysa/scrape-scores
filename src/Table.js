@@ -7,9 +7,11 @@ import 'react-table/react-table.css';
 const Table = data => {
   return (
     <ReactTable
+      showPagination={false}
       data={data.data}
       columns={[
         {
+          Header: 'Put Boys/Girls Here?',
           columns: [
             {
               Header: 'Team',
@@ -32,14 +34,17 @@ const Table = data => {
         },
         {
           Header: 'Points Scored',
+
           columns: [
             {
               Header: 'at Home',
-              accessor: 'scoredAtHome'
+              accessor: 'scoredAtHome',
+              show: false
             },
             {
               Header: 'Away',
-              accessor: 'scoredAtAway'
+              accessor: 'scoredAtAway',
+              show: false
             }
           ]
         },
@@ -48,11 +53,13 @@ const Table = data => {
           columns: [
             {
               Header: 'at Home',
-              accessor: 'homePoints'
+              accessor: 'homePoints',
+              show: false
             },
             {
               Header: 'Away',
-              accessor: 'awayPoints'
+              accessor: 'awayPoints',
+              show: false
             }
           ]
         }

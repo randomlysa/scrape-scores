@@ -147,13 +147,15 @@ const getData = () => {
           [resultsWL, resultsPoints]
         );
 
-        return new Promise((resolve, reject) => {
+        const p = new Promise((resolve, reject) => {
           const results = alasql(
             'SELECT * FROM ? joinResults JOIN ? resultsScoredHomeAway USING team',
             [joinResults, resultsScoredHomeAway]
           );
           resolve(results);
         });
+
+        return { [j]: p };
       }); // ['boys', 'girls'].map
     }); // fetch.then.then whee
 }; // const getData()

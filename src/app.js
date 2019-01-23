@@ -17,8 +17,9 @@ class App extends React.Component {
     const data = getData();
     data.then(d => {
       d.forEach(item => {
-        item.then(y => {
-          this.setState({ data: y });
+        const which = Object.keys(item);
+        item[which].then(data => {
+          this.setState({ data });
         });
       });
     });
