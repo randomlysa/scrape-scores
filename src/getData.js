@@ -40,12 +40,32 @@ const getData = () => {
               .map(n => n.slice(0, 1).toUpperCase() + n.slice(1))
               .join(' ');
 
+            if (currentTeam['boys']) {
+              const team = currentTeam['boys'];
+              alasql(
+                `INSERT INTO boys VALUES ('${team}', '', 'H', '0', '0', '0', '0', '')`
+              );
+              alasql(
+                `INSERT INTO boys VALUES ('${team}', '', 'A', '0', '0', '0', '0', '')`
+              );
+            }
+
             currentTeam['girls'] = rowData[6]
               .toLowerCase()
               .toLowerCase()
               .split(' ')
               .map(n => n.slice(0, 1).toUpperCase() + n.slice(1))
               .join(' ');
+
+            if (currentTeam['girls']) {
+              const team = currentTeam['girls'];
+              alasql(
+                `INSERT INTO girls VALUES ('${team}', '', 'H', '0', '0', '0', '0', '')`
+              );
+              alasql(
+                `INSERT INTO girls VALUES ('${team}', '', 'A', '0', '0', '0', '0', '')`
+              );
+            }
           }
 
           // There is a row with length of 9 that is something like the nav menu - ignore it.
