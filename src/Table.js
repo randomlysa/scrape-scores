@@ -93,7 +93,7 @@ const Table = props => {
 
           columns: [
             {
-              Header: 'at Home',
+              Header: 'Home',
               accessor: 'scoredAtHome',
               show: props.showExtraCols,
               width: 85
@@ -110,7 +110,7 @@ const Table = props => {
           Header: 'Points Allowed',
           columns: [
             {
-              Header: 'at Home',
+              Header: 'Home',
               accessor: 'pointsAllowedHome',
               show: props.showExtraCols,
               width: 85
