@@ -125,9 +125,19 @@ const getData = () => {
       // 'CREATE TABLE boys (team , date , homeAway , wL , homeScore , awayScore , opponent )'
       return ['boys', 'girls'].map(j => {
         // DB
-        // Basic W/L
+        // ADVANCED W/L - filter out teams with no wins or losses.
+        // This happens because I added dummy data for each team.
+        // That was (seemed) necessary because some teams had no home games and
+        // when I tried to join those results, it didn't work. Their W/L showed up, but
+        // everything afterward was empty. If I switched to join away items before
+        // home items, that seemed to fix things, but this seems like a better fix.
+
+        // Example: Foundation Boys had no home games.
+        // The only data that showed up was Team and record. Everything else in
+        // their row was empty, even though they have played 3 away games and
+        // hae scored and allowed points.
         const resultsWL = alasql(
-          `SELECT team, SUM(w) as wins, SUM(l) as losses FROM ${j} GROUP BY team`
+          `SELECT team, SUM(w) as wins, SUM(l) as losses FROM ${j} GROUP BY team HAVING SUM(w) > 0 OR SUM(l) > 0`
         );
 
         // '(team , date , homeAway , w number, l , homeScore , awayScore , opponent )'
