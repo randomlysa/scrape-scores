@@ -139,17 +139,17 @@ const getData = () => {
             streakOver = false;
             currentTeam = game.team;
             if (game.w === 1) {
-              streakType = 'win';
+              streakType = 'W';
             } else if (game.l === 1) {
-              streakType = 'loss';
+              streakType = 'L';
             }
 
             // Determine if streak is over or continues
           } else {
-            if (streakOver === false && streakType === 'win' && game.w === 1) {
+            if (streakOver === false && streakType === 'W' && game.w === 1) {
               streakLength++;
             }
-            if (streakOver === false && streakType === 'win' && game.w === 0) {
+            if (streakOver === false && streakType === 'W' && game.w === 0) {
               streakOver = true;
               streakData.push({
                 team: currentTeam,
@@ -158,10 +158,10 @@ const getData = () => {
               });
               streakLength = 1;
             }
-            if (streakOver === false && streakType === 'loss' && game.l === 1) {
+            if (streakOver === false && streakType === 'L' && game.l === 1) {
               streakLength++;
             }
-            if (streakOver === false && streakType === 'loss' && game.l === 0) {
+            if (streakOver === false && streakType === 'L' && game.l === 0) {
               streakOver = true;
               streakData.push({
                 team: currentTeam,

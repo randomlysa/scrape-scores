@@ -85,6 +85,16 @@ const Table = props => {
                 </span>
               ),
               width: 85
+            },
+            {
+              Header: 'Streak',
+              accessor: 'streakLength',
+              Cell: props => (
+                <span>
+                  {props.original.streakType} {props.original.streakLength}
+                </span>
+              ),
+              width: 85
             }
           ]
         },
