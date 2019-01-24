@@ -34,36 +34,57 @@ const Table = props => {
           ]
         },
         {
-          Header: 'Home Record',
           columns: [
             {
-              Header: 'Wins',
+              Header: 'Home',
               accessor: 'homeWins',
-              show: props.showExtraCols,
-              width: 65
-            },
-            {
-              Header: 'Losses',
-              accessor: 'homeLosses',
-              show: props.showExtraCols,
-              width: 65
+              Cell: props => (
+                <span>
+                  {props.original.homeWins} - {props.original.homeLosses}
+                </span>
+              )
             }
           ]
         },
+
         {
-          Header: 'Away Record',
+          Header: 'Away',
+          accessor: 'homeWins',
+          Cell: props => (
+            <span>
+              {props.original.awayWins} - {props.original.awayLosses}
+            </span>
+          )
+        },
+        {
           columns: [
             {
-              Header: 'Wins',
-              accessor: 'awayWins',
-              show: props.showExtraCols,
-              width: 65
+              Header: 'PPG',
+              accessor: 'scoredAtHome',
+              Cell: props => (
+                <span>
+                  {Math.round(
+                    (parseInt(props.original.scoredAtHome) +
+                      parseInt(props.original.scoredAtAway)) /
+                      (props.original.wins + props.original.losses)
+                  )}
+                </span>
+              ),
+              width: 85
             },
             {
-              Header: 'Losses',
-              accessor: 'awayLosses',
-              show: props.showExtraCols,
-              width: 65
+              Header: 'OPP PPG',
+              accessor: 'pointsAllowedHome',
+              Cell: props => (
+                <span>
+                  {Math.round(
+                    (parseInt(props.original.pointsAllowedHome) +
+                      parseInt(props.original.pointsAllowedAway)) /
+                      (props.original.wins + props.original.losses)
+                  )}
+                </span>
+              ),
+              width: 85
             }
           ]
         },
