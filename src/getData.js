@@ -7,10 +7,10 @@ const getData = () => {
       new alasql.Database('games');
       //   'CREATE TABLE boys (team string, date string, homeAway string, wL string, homeScore number, awayScore number, opponent string)'
       alasql(
-        'CREATE TABLE boys (team string, date string, homeAway string, w number, l number, homeScore number, awayScore number, opponent string)'
+        'CREATE TABLE boys (gameid INT AUTO_INCREMENT, team string, date string, homeAway string, w number, l number, homeScore number, awayScore number, opponent string)'
       );
       alasql(
-        'CREATE TABLE girls (team string, date string, homeAway string, w number, l number, homeScore number, awayScore number, opponent string)'
+        'CREATE TABLE girls (gameid INT AUTO_INCREMENT, team string, date string, homeAway string, w number, l number, homeScore number, awayScore number, opponent string)'
       );
       // end alasql
 
@@ -43,10 +43,10 @@ const getData = () => {
             if (currentTeam['boys']) {
               const team = currentTeam['boys'];
               alasql(
-                `INSERT INTO boys VALUES ('${team}', '', 'H', '0', '0', '0', '0', '')`
+                `INSERT INTO boys VALUES ('', '${team}', '', 'H', '0', '0', '0', '0', '')`
               );
               alasql(
-                `INSERT INTO boys VALUES ('${team}', '', 'A', '0', '0', '0', '0', '')`
+                `INSERT INTO boys VALUES ('', '${team}', '', 'A', '0', '0', '0', '0', '')`
               );
             }
 
@@ -60,10 +60,10 @@ const getData = () => {
             if (currentTeam['girls']) {
               const team = currentTeam['girls'];
               alasql(
-                `INSERT INTO girls VALUES ('${team}', '', 'H', '0', '0', '0', '0', '')`
+                `INSERT INTO girls VALUES ('', '${team}', '', 'H', '0', '0', '0', '0', '')`
               );
               alasql(
-                `INSERT INTO girls VALUES ('${team}', '', 'A', '0', '0', '0', '0', '')`
+                `INSERT INTO girls VALUES ('', '${team}', '', 'A', '0', '0', '0', '0', '')`
               );
             }
           }
@@ -92,7 +92,7 @@ const getData = () => {
                   let opponent = opponentFinal;
                   // `INSERT INTO boys VALUES ('${team}', ${date}, ${homeAway}, ${wL}, ${homeScore}, ${awayScore}, ${opponent})`
                   alasql(`
-            INSERT INTO ${j} VALUES ('${team}', '${date}', '${homeAway}', ${w}, ${l}, ${homeScore}, ${awayScore}, '${opponent}')
+            INSERT INTO ${j} VALUES ('', '${team}', '${date}', '${homeAway}', ${w}, ${l}, ${homeScore}, ${awayScore}, '${opponent}')
           `);
                 } else {
                   error++;
@@ -124,6 +124,55 @@ const getData = () => {
 
       // 'CREATE TABLE boys (team , date , homeAway , wL , homeScore , awayScore , opponent )'
       return ['boys', 'girls'].map(j => {
+        const gamesForStreak = alasql(
+          `SELECT gameid, team, w, l from ${j} ORDER BY gameid DESC`
+        );
+        const streakData = [];
+        let currentTeam = '';
+        let streakType = '';
+        let streakLength = 1;
+        let streakOver = false;
+
+        gamesForStreak.forEach(game => {
+          // Change teams and determine streak type.
+          if (game.team !== currentTeam) {
+            streakOver = false;
+            currentTeam = game.team;
+            if (game.w === 1) {
+              streakType = 'win';
+            } else if (game.l === 1) {
+              streakType = 'loss';
+            }
+
+            // Determine if streak is over or continues
+          } else {
+            if (streakOver === false && streakType === 'win' && game.w === 1) {
+              streakLength++;
+            }
+            if (streakOver === false && streakType === 'win' && game.w === 0) {
+              streakOver = true;
+              streakData.push({
+                team: currentTeam,
+                streakType: streakType,
+                streakLength: streakLength
+              });
+              streakLength = 1;
+            }
+            if (streakOver === false && streakType === 'loss' && game.l === 1) {
+              streakLength++;
+            }
+            if (streakOver === false && streakType === 'loss' && game.l === 0) {
+              streakOver = true;
+              streakData.push({
+                team: currentTeam,
+                streakType: streakType,
+                streakLength: streakLength
+              });
+              streakLength = 1;
+            }
+          }
+        });
+
         // DB
         // ADVANCED W/L - filter out teams with no wins or losses.
         // This happens because I added dummy data for each team.
@@ -205,13 +254,15 @@ const getData = () => {
             LEFT JOIN ? pointsAllowedHomePointsAllowedAway USING team
             LEFT JOIN ? homeAwayRecords USING team
             LEFT JOIN ? scoredAtHomescoredAway USING team
+            LEFT JOIN ? streakData USING team
             ORDER BY resultsWL.wins DESC
             `,
             [
               resultsWL,
               pointsAllowedHomePointsAllowedAway,
               homeAwayRecords,
-              scoredAtHomescoredAway
+              scoredAtHomescoredAway,
+              streakData
             ]
           );
 
