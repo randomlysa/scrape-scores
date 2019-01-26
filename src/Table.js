@@ -14,7 +14,15 @@ const Table = props => {
           columns: [
             {
               Header: 'Team',
-              accessor: 'team'
+              accessor: 'team',
+              Cell: props => (
+                <span>
+                  {props.original.team
+                    .split(' ')
+                    .slice(0, -1)
+                    .join(' ')}
+                </span>
+              )
             }
           ]
         },
