@@ -19,7 +19,6 @@ const Table = props => {
           ]
         },
         {
-          Header: 'Record',
           columns: [
             {
               Header: 'Wins',
