@@ -30,18 +30,37 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    const data = getData();
-    data.then(d => {
-      d.forEach(item => {
-        // which is either 'boys' or 'girls'
-        const which = Object.keys(item);
+    // If no localstorage data exists
+    //  show loading and get data.
+    //  once data is received, save to state and localstorage.
 
-        item[which].then(data => {
-          // set data to this.state.boys or this.state.girls
-          this.setState({ [which[0]]: data });
+    // If localstorage exists
+    //  load and display data from storage
+    //  request update
+    //  compare update to storage (just data, not view)
+    //  if different, show 'update available, click to update'
+    //    on click to update, update state and storage
+
+    const localData = localStorage.getItem('macs_scores');
+
+    // LocalStorage data exists.
+    if (localData) {
+      // LocalStorage data doesn't exist.
+    } else {
+      const data = getData();
+      data.then(d => {
+        d.forEach(item => {
+          // which is either 'boys' or 'girls'
+          const which = Object.keys(item);
+
+          item[which].then(data => {
+            // set data to this.state.boys or this.state.girls
+            this.setState({ [which[0]]: data });
+            localStorage.setItem('macs_scores', JSON.stringify(this.state));
+          });
         });
       });
-    });
+    }
   }
 
   render() {
