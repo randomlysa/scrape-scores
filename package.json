@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@emotion/core": "^10.0.6",
     "alasql": "^0.4.11",
     "cors": "^2.8.5",
     "express": "^4.16.4",
