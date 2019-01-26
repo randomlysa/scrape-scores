@@ -86,6 +86,7 @@ class App extends React.Component {
       return (
         <div>
           <Header
+            displaying={this.state.display}
             toggleBG={this.toggleBG}
             toggleExtraCols={this.toggleExtraCols}
           />
