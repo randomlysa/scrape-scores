@@ -1,3 +1,4 @@
+// Color scheme: https://coolors.co/fe938c-e6b89c-ead2ac-9cafb7-4281a4
 import React from 'react';
 import { render } from 'react-dom';
 
