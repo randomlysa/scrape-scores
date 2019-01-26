@@ -13,6 +13,8 @@ class App extends React.Component {
       showExtraCols: false,
       display: 'boys',
       boys: [],
+      girls: [],
+      updateAvailable: false
     };
 
     this.toggleExtraCols = this.toggleExtraCols.bind(this);
@@ -26,6 +28,26 @@ class App extends React.Component {
   toggleBG() {
     if (this.state.display === 'boys') this.setState({ display: 'girls' });
     else this.setState({ display: 'boys' });
+  }
+
+  updateData() {
+    const data = getData();
+    data.then(d => {
+      d.forEach(item => {
+        // which is either 'boys' or 'girls'
+        const which = Object.keys(item);
+
+        item[which].then(data => {
+          // set data to this.state.boys or this.state.girls
+          this.setState({ [which[0]]: data });
+
+          localStorage.setItem(
+            'macs_scores',
+            JSON.stringify({ timeStamp: Date.now(), ...this.state })
+          );
+        });
+      });
+    });
   }
 
   componentDidMount() {
@@ -44,24 +66,15 @@ class App extends React.Component {
 
     // LocalStorage data exists.
     if (localData) {
-      const { boys, girls } = JSON.parse(localData);
+      const { boys, girls, timeStamp } = JSON.parse(localData);
       this.setState({ boys, girls });
-
-      // LocalStorage data doesn't exist.
+      if (Date.now() - timeStamp > 3600000) {
+        // Local data older than an hour, get update.
+        this.updateData();
+      }
     } else {
-      const data = getData();
-      data.then(d => {
-        d.forEach(item => {
-          // which is either 'boys' or 'girls'
-          const which = Object.keys(item);
-
-          item[which].then(data => {
-            // set data to this.state.boys or this.state.girls
-            this.setState({ [which[0]]: data });
-            localStorage.setItem('macs_scores', JSON.stringify(this.state));
-          });
-        });
-      });
+      // LocalStorage data doesn't exist.
+      this.updateData();
     }
   }
 
