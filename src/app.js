@@ -13,7 +13,6 @@ class App extends React.Component {
       showExtraCols: false,
       display: 'boys',
       boys: [],
-      girls: []
     };
 
     this.toggleExtraCols = this.toggleExtraCols.bind(this);
@@ -45,6 +44,9 @@ class App extends React.Component {
 
     // LocalStorage data exists.
     if (localData) {
+      const { boys, girls } = JSON.parse(localData);
+      this.setState({ boys, girls });
+
       // LocalStorage data doesn't exist.
     } else {
       const data = getData();
