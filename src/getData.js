@@ -193,8 +193,10 @@ const getData = () => {
         // The only data that showed up was Team and record. Everything else in
         // their row was empty, even though they have played 3 away games and
         // hae scored and allowed points.
-        const resultsWL = alasql(
-          `SELECT team, SUM(w) as wins, SUM(l) as losses FROM ${j} GROUP BY team HAVING SUM(w) > 0 OR SUM(l) > 0`
+
+        // Won Loss Total
+        const resultsWLT = alasql(
+          `SELECT team, SUM(w) as wins, SUM(l) as losses, SUM(w + l) as total FROM ${j} GROUP BY team HAVING SUM(w) > 0 OR SUM(l) > 0`
         );
 
         // '(team , date , homeAway , w number, l , homeScore , awayScore , opponent )'
@@ -258,15 +260,15 @@ const getData = () => {
 
         const p = new Promise((resolve, reject) => {
           const results = alasql(
-            `SELECT * FROM ? resultsWL
+            `SELECT *, wins/total as pct FROM ? resultsWLT
             LEFT JOIN ? pointsAllowedHomePointsAllowedAway USING team
             LEFT JOIN ? homeAwayRecords USING team
             LEFT JOIN ? scoredAtHomescoredAway USING team
             LEFT JOIN ? streakData USING team
-            ORDER BY resultsWL.wins DESC
+            ORDER BY resultsWLT.pct DESC
             `,
             [
-              resultsWL,
+              resultsWLT,
               pointsAllowedHomePointsAllowedAway,
               homeAwayRecords,
               scoredAtHomescoredAway,

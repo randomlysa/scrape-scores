@@ -37,6 +37,11 @@ const Table = props => {
               Header: 'Losses',
               accessor: 'losses',
               width: 65
+            },
+            {
+              Header: '%',
+              accessor: 'pct',
+              Cell: props => <span>{props.original.pct.toFixed(3)}</span>
             }
           ]
         },
