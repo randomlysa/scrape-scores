@@ -1,13 +1,20 @@
-// content of index.js
-const express = require('express');
+//  https://stackoverflow.com/questions/11744975/enabling-https-on-express-js#11745114
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+
 const cors = require('cors');
 const NodeCache = require('node-cache');
+const fetch = require('node-fetch');
+const privateKey = fs.readFileSync('private.key', 'utf8');
+const certificate = fs.readFileSync('server.crt', 'utf8');
 
+const credentials = { key: privateKey, cert: certificate };
+const express = require('express');
 const app = express();
 app.use(cors());
 
-const port = 3000;
-const fetch = require('node-fetch');
+// your express configuration here
 
 // Store data in cache for 24 hours (86400 seconds). After that, delete, and
 // it will be re-fetched.
@@ -39,10 +46,8 @@ app.get('/macs', async (request, response) => {
     });
 });
 
-app.listen(port, err => {
-  if (err) {
-    return console.log('something bad happened', err);
-  }
+var httpServer = http.createServer(app);
+var httpsServer = https.createServer(credentials, app);
 
-  console.log(`server is listening on ${port}`);
-});
+httpServer.listen(8080);
+httpsServer.listen(8443);
