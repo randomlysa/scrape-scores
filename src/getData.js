@@ -81,19 +81,27 @@ const getData = () => {
                 if (opponent[0] === '@') opponentFinal = opponent.slice(1);
                 if (opponent[0] === 'v') opponentFinal = opponent.slice(4);
 
-                if (finalRowData[2].includes('-')) {
+                let w, l, homeScore, awayScore;
+                if (
+                  finalRowData[2].includes('-') &&
+                  finalRowData[2].includes(' ')
+                ) {
                   let team = currentTeam[j];
                   let date = finalRowData[0];
                   let homeAway = finalRowData[1];
-                  let w = finalRowData[2].split(' ')[0] === 'W' ? 1 : 0;
-                  let l = finalRowData[2].split(' ')[0] === 'L' ? 1 : 0;
-                  let homeScore = finalRowData[2].split(' ')[1].split('-')[0];
-                  let awayScore = finalRowData[2].split(' ')[1].split('-')[1];
-                  let opponent = opponentFinal;
-                  // `INSERT INTO boys VALUES ('${team}', ${date}, ${homeAway}, ${wL}, ${homeScore}, ${awayScore}, ${opponent})`
+
+                  w = finalRowData[2].split(' ')[0] === 'W' ? 1 : 0;
+                  l = finalRowData[2].split(' ')[0] === 'L' ? 1 : 0;
+
+                  homeScore = finalRowData[2].split(' ')[1].split('-')[0];
+                  awayScore = finalRowData[2].split(' ')[1].split('-')[1];
+                  opponent = opponentFinal;
+
                   alasql(`
-            INSERT INTO ${j} VALUES ('', '${team}', '${date}', '${homeAway}', ${w}, ${l}, ${homeScore}, ${awayScore}, '${opponent}')
-          `);
+                    INSERT INTO ${j} VALUES ('', '${team}', '${date}', '${homeAway}', ${w}, ${l}, ${homeScore}, ${awayScore}, '${opponent}')
+                  `);
+
+                  // `INSERT INTO boys VALUES ('${team}', ${date}, ${homeAway}, ${wL}, ${homeScore}, ${awayScore}, ${opponent})`
                 } else {
                   error++;
                   // Log rows that don't fit. Use to check if the wrong rows are getting skipped.
