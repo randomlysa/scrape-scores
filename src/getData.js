@@ -81,20 +81,25 @@ const getData = () => {
                 if (opponent[0] === '@') opponentFinal = opponent.slice(1);
                 if (opponent[0] === 'v') opponentFinal = opponent.slice(4);
 
-                let w, l, homeScore, awayScore;
-                if (
-                  finalRowData[2].includes('-') &&
-                  finalRowData[2].includes(' ')
-                ) {
+                // finalRowData[2] usually is "W 44-22 or L 15-30"
+                // for there to be a score, there pretty much has to be a '-'
+                if (finalRowData[2].includes('-')) {
                   let team = currentTeam[j];
                   let date = finalRowData[0];
                   let homeAway = finalRowData[1];
 
-                  w = finalRowData[2].split(' ')[0] === 'W' ? 1 : 0;
-                  l = finalRowData[2].split(' ')[0] === 'L' ? 1 : 0;
+                  let w = finalRowData[2].includes('W') ? 1 : 0;
+                  let l = finalRowData[2].includes('L') ? 1 : 0;
 
-                  homeScore = finalRowData[2].split(' ')[1].split('-')[0];
-                  awayScore = finalRowData[2].split(' ')[1].split('-')[1];
+                  // Remove letters (W/L), keep only numbers (score)
+                  // https://stackoverflow.com/a/1862219/3996097
+                  let homeScore = finalRowData[2]
+                    .split('-')[0]
+                    .replace(/\D/g, '');
+                  let awayScore = finalRowData[2]
+                    .split('-')[1]
+                    .replace(/\D/g, '');
+
                   opponent = opponentFinal;
 
                   alasql(`
