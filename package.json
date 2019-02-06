@@ -6,7 +6,10 @@
   "scripts": {
     "start": "npm-run-all --parallel start:parcel start:server",
     "start:parcel": "parcel src/index.html",
-    "start:server": "node src/server.js"
+    "start:server": "node src/server.js",
+    "build": "npm-run-all rmdist build:parcel",
+    "rmdist": "rm ./dist/*",
+    "build:parcel": "parcel build ./src/index.html"
   },
   "author": "",
   "license": "ISC",
