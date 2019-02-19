@@ -5,13 +5,12 @@ module.exports = {
     // start alasql
     const alasql = require('alasql');
     new alasql.Database('games');
-    //  ('CREATE TABLE boys (team string, date string, homeAway string, wL string, homeScore number, awayScore number, opponent string)');
-    alasql(
-      'CREATE TABLE if not exists boys (gameid INT AUTO_INCREMENT, team string, date string, homeAway string, w number, l number, homeScore number, awayScore number, opponent string, gameHash string)'
-    );
-    alasql(
-      'CREATE TABLE if not exists girls (gameid INT AUTO_INCREMENT, team string, date string, homeAway string, w number, l number, homeScore number, awayScore number, opponent string, gameHash string)'
-    );
+
+    ['boys', 'girls'].forEach(which => {
+      alasql(
+        `CREATE TABLE if not exists ${which} (gameid INT AUTO_INCREMENT, team string, date string, homeAway string, w number, l number, homeScore number, awayScore number, opponent string, gameHash string)`
+      );
+    });
     // end alasql
 
     // Current team.
@@ -40,19 +39,6 @@ module.exports = {
             .map(n => n.slice(0, 1).toUpperCase() + n.slice(1))
             .join(' ');
 
-          // Create dummy home and away games for boys and girls.
-          // At least one team only had home OR away games and they wouldn't
-          // show up in SQL joins. This fixed that.
-          if (currentTeam['boys']) {
-            const team = currentTeam['boys'];
-            alasql(
-              `INSERT INTO boys VALUES ('', '${team}', '', 'H', '0', '0', '0', '0', '', '')`
-            );
-            alasql(
-              `INSERT INTO boys VALUES ('', '${team}', '', 'A', '0', '0', '0', '0', '', '')`
-            );
-          }
-
           currentTeam['girls'] = rowData[6]
             .toLowerCase()
             .toLowerCase()
@@ -60,15 +46,18 @@ module.exports = {
             .map(n => n.slice(0, 1).toUpperCase() + n.slice(1))
             .join(' ');
 
-          if (currentTeam['girls']) {
-            const team = currentTeam['girls'];
+          // Create dummy home and away games for boys and girls.
+          // At least one team only had home OR away games and they wouldn't
+          // show up in SQL joins. This fixed that.
+          ['boys', 'girls'].forEach(which => {
+            const team = currentTeam[which];
             alasql(
-              `INSERT INTO girls VALUES ('', '${team}', '', 'H', '0', '0', '0', '0', '', '')`
+              `INSERT INTO ${which} VALUES ('', '${team}', '', 'H', '0', '0', '0', '0', '', '')`
             );
             alasql(
-              `INSERT INTO girls VALUES ('', '${team}', '', 'A', '0', '0', '0', '0', '', '')`
+              `INSERT INTO ${which} VALUES ('', '${team}', '', 'A', '0', '0', '0', '0', '', '')`
             );
-          }
+          });
           // End creating dummy data.
         }
 
