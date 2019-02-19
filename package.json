@@ -19,6 +19,7 @@
     "@emotion/core": "^10.0.7",
     "@emotion/styled": "^10.0.7",
     "alasql": "^0.4.11",
+    "axios": "^0.18.0",
     "babel-loader": "^8.0.5",
     "cors": "^2.8.5",
     "express": "^4.16.4",
