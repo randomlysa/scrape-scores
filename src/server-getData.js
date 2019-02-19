@@ -25,6 +25,8 @@ module.exports = {
     let errorRows = [];
 
     data.split('\n').forEach((line, index) => {
+      // We've hit a new row. rowData (array) should have data from the previous
+      // td/th's. Check/parse/insert that data, then reset rowData = [].
       if (line.includes('<tr')) {
         // Rows with 7 items:
         // want rowData[2] = boys team
@@ -59,6 +61,12 @@ module.exports = {
         }
 
         // There is a row with length of 9 that is something like the nav menu - ignore it.
+        // Otherwise, rowData.length === 9 should mean:
+
+        // ------------ Boys -----------        ---------- Girls ------------
+        //  [1]   [2]      [3]      [4] |  [5]  |  [6]   [7]      [8]      [9]
+        // Date | H/A | W pts-pts | opp | empty | Date | H/A | W pts-pts | opp
+        // This is were the data insertion happens!
         if (rowData.length === 9 && rowData[0] !== 'HOME') {
           ['boys', 'girls'].forEach(j => {
             let finalRowData;
@@ -117,18 +125,9 @@ module.exports = {
         rowData = [];
         currentRow++;
         currentTh = 0;
-      }
+      } // if (line.includes('<tr'))
 
-      // Each tr has 9 th. th 1-4 = boys, th 6-9 = girls;
-      // th:
-      // 0 - date
-      // 1 - home / away (H || A)
-      // 2 - W/L Score (L 46-49)
-      // 3 - opponent ( vs. ABC)
-      // 4 - EMPTY (&nbsp;)
-      //
-
-      // Line is one th (which should really be a td) or td.
+      // 'line' is one th (which should really be a td) or td.
       // It's one line of HTML - data.split(\n).
       // So it's really more of a 'column.'
       // Add <th> or <td> to rowData (which is an array.)
@@ -140,7 +139,7 @@ module.exports = {
       }
     }); // data.split.forEach
 
-    // 'CREATE TABLE boys (team , date , homeAway , wL , homeScore , awayScore , opponent )'
+    // Select data inserted into [boys, girls] tables and make useful info from it!
     return ['boys', 'girls'].map(j => {
       const gamesForStreak = alasql(
         `SELECT gameid, team, w, l from ${j} ORDER BY gameid DESC`
