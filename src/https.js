@@ -5,6 +5,12 @@ const NodeCache = require('node-cache');
 const fetch = require('node-fetch');
 const express = require('express');
 
+const getData = require('./server-getData');
+
+// Store data in cache for 24 hours (86400 seconds). After that, delete, and
+// it will be re-fetched.
+const myCache = new NodeCache({ stdTTL: 86400, checkperiod: 120 });
+
 require('greenlock-express')
   .create({
     // Let's Encrypt v2 is ACME draft 11
@@ -28,12 +34,12 @@ require('greenlock-express')
     // ex: /home/foouser/acme/etc
     configDir: '~/config/',
 
-    app: require('express')().use('/', function(req, res) {
+    app: require('express')().use('/', cors(), function(req, res) {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       const cacheData = myCache.get('macs_data');
       if (cacheData) {
         console.log('has cache');
-        return response.send(cacheData);
+        return res.send(cacheData);
       } else {
         console.log('no can has cache');
       }
@@ -41,13 +47,23 @@ require('greenlock-express')
       fetch('http://www.mnchristianschools.org/athletics.html')
         .then(res => res.text())
         .then(body => {
-          // Save 'body' to cache.
-          myCache.set('macs_data', body, (err, success) => {
-            if (err) console.log('Error: ', err);
-            if (success) console.log('Success: ', success);
-          });
           console.log('in fetch');
-          response.send(body);
+          const waitData = async rData => {
+            return await getData.getData(rData);
+          };
+
+          waitData(body).then(d => {
+            Promise.all([d[0].boys, d[1].girls]).then(final => {
+              // Save 'final' to cache.
+              myCache.set('macs_data', final, (err, success) => {
+                if (err) console.log('Error: ', err);
+                if (success) console.log('Success: ', success);
+              });
+              // Send reponse - final.
+              // final[0] = boys, final[1] = girls
+              res.send(final);
+            });
+          });
         });
     }),
 
