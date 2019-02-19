@@ -1,3 +1,4 @@
+// Reduced build size from 631KB to 206KB by moving alasql to server.
 module.exports = {
   getData: function(data) {
     const md5 = require('md5');
