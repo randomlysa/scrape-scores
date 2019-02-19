@@ -25,9 +25,6 @@ module.exports = {
     let errorRows = [];
 
     data.split('\n').forEach((line, index) => {
-      // https://stackoverflow.com/a/5002161/3996097
-      const newLine = line.replace(/<\/?[^>]+(>|$)/g, '');
-
       if (line.includes('<tr')) {
         // Rows with 7 items:
         // want rowData[2] = boys team
@@ -131,7 +128,14 @@ module.exports = {
       // 4 - EMPTY (&nbsp;)
       //
 
+      // Line is one th (which should really be a td) or td.
+      // It's one line of HTML - data.split(\n).
+      // So it's really more of a 'column.'
+      // Add <th> or <td> to rowData (which is an array.)
       if (line.includes('<th') || line.includes('<td')) {
+        // https://stackoverflow.com/a/5002161/3996097
+        // Strip out html tags.
+        const newLine = line.replace(/<\/?[^>]+(>|$)/g, '');
         rowData.push(newLine.trim());
       }
     }); // data.split.forEach
