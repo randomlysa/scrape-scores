@@ -6,10 +6,7 @@ const https = require('https');
 const cors = require('cors');
 const NodeCache = require('node-cache');
 const fetch = require('node-fetch');
-const privateKey = fs.readFileSync('private.key', 'utf8');
-const certificate = fs.readFileSync('server.crt', 'utf8');
 
-const credentials = { key: privateKey, cert: certificate };
 const express = require('express');
 const app = express();
 app.use(cors());
@@ -47,7 +44,7 @@ app.get('/macs', async (request, response) => {
 });
 
 var httpServer = http.createServer(app);
-var httpsServer = https.createServer(credentials, app);
+var httpsServer = https.createServer(app);
 
 httpServer.listen(8080);
 httpsServer.listen(8443);
