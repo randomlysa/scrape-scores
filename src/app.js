@@ -1,9 +1,8 @@
 // Color scheme: https://coolors.co/fe938c-e6b89c-ead2ac-9cafb7-4281a4
 import React from 'react';
 import { render } from 'react-dom';
+import axios from 'axios';
 
-// Get and parse data
-import getData from './getData';
 import Header from './Header';
 import Table from './Table';
 
@@ -32,22 +31,16 @@ class App extends React.Component {
   }
 
   updateData() {
-    const data = getData();
-    data.then(d => {
-      d.forEach(item => {
-        // which is either 'boys' or 'girls'
-        const which = Object.keys(item);
+    const getData = axios.get('http://localhost:8080/macs');
+    getData.then(response => {
+      const [data] = response;
 
-        item[which].then(data => {
-          // set data to this.state.boys or this.state.girls
-          this.setState({ [which[0]]: data });
+      this.setState({ boys: data[0], girls: data[1] });
 
-          localStorage.setItem(
-            'macs_scores',
-            JSON.stringify({ timeStamp: Date.now(), ...this.state })
-          );
-        });
-      });
+      localStorage.setItem(
+        'macs_scores',
+        JSON.stringify({ timeStamp: Date.now(), ...this.state })
+      );
     });
   }
 
@@ -62,7 +55,6 @@ class App extends React.Component {
     //  compare update to storage (just data, not view)
     //  if different, show 'update available, click to update'
     //    on click to update, update state and storage
-
     const localData = localStorage.getItem('macs_scores');
 
     // LocalStorage data exists.
