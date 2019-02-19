@@ -38,6 +38,9 @@ module.exports = {
             .map(n => n.slice(0, 1).toUpperCase() + n.slice(1))
             .join(' ');
 
+          // Create dummy home and away games for boys and girls.
+          // At least one team only had home OR away games and they wouldn't
+          // show up in SQL joins. This fixed that.
           if (currentTeam['boys']) {
             const team = currentTeam['boys'];
             alasql(
@@ -64,6 +67,7 @@ module.exports = {
               `INSERT INTO girls VALUES ('', '${team}', '', 'A', '0', '0', '0', '0', '')`
             );
           }
+          // End creating dummy data.
         }
 
         // There is a row with length of 9 that is something like the nav menu - ignore it.
