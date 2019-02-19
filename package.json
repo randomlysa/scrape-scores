@@ -4,13 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "npm-run-all --parallel start:parcel start:server",
-    "start:parcel": "parcel src/index.html",
+    "start": "webpack-dev-server --open --config webpack.dev.js",
     "start:server": "node src/server.js",
-    "build:webpack": "webpack --config webpack.prod.js",
-    "build": "npm-run-all rmdist build:parcel",
-    "rmdist": "rm ./dist/*",
-    "build:parcel": "parcel build ./src/index.html"
+    "build": "webpack --config webpack.prod.js"
   },
   "author": "",
   "license": "ISC",
