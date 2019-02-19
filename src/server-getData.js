@@ -1,14 +1,16 @@
 module.exports = {
   getData: function(data) {
+    const md5 = require('md5');
+
     // start alasql
     const alasql = require('alasql');
     new alasql.Database('games');
     //  ('CREATE TABLE boys (team string, date string, homeAway string, wL string, homeScore number, awayScore number, opponent string)');
     alasql(
-      'CREATE TABLE if not exists boys (gameid INT AUTO_INCREMENT, team string, date string, homeAway string, w number, l number, homeScore number, awayScore number, opponent string)'
+      'CREATE TABLE if not exists boys (gameid INT AUTO_INCREMENT, team string, date string, homeAway string, w number, l number, homeScore number, awayScore number, opponent string, gameHash string)'
     );
     alasql(
-      'CREATE TABLE if not exists girls (gameid INT AUTO_INCREMENT, team string, date string, homeAway string, w number, l number, homeScore number, awayScore number, opponent string)'
+      'CREATE TABLE if not exists girls (gameid INT AUTO_INCREMENT, team string, date string, homeAway string, w number, l number, homeScore number, awayScore number, opponent string, gameHash string)'
     );
     // end alasql
 
@@ -44,10 +46,10 @@ module.exports = {
           if (currentTeam['boys']) {
             const team = currentTeam['boys'];
             alasql(
-              `INSERT INTO boys VALUES ('', '${team}', '', 'H', '0', '0', '0', '0', '')`
+              `INSERT INTO boys VALUES ('', '${team}', '', 'H', '0', '0', '0', '0', '', '')`
             );
             alasql(
-              `INSERT INTO boys VALUES ('', '${team}', '', 'A', '0', '0', '0', '0', '')`
+              `INSERT INTO boys VALUES ('', '${team}', '', 'A', '0', '0', '0', '0', '', '')`
             );
           }
 
@@ -61,10 +63,10 @@ module.exports = {
           if (currentTeam['girls']) {
             const team = currentTeam['girls'];
             alasql(
-              `INSERT INTO girls VALUES ('', '${team}', '', 'H', '0', '0', '0', '0', '')`
+              `INSERT INTO girls VALUES ('', '${team}', '', 'H', '0', '0', '0', '0', '', '')`
             );
             alasql(
-              `INSERT INTO girls VALUES ('', '${team}', '', 'A', '0', '0', '0', '0', '')`
+              `INSERT INTO girls VALUES ('', '${team}', '', 'A', '0', '0', '0', '0', '', '')`
             );
           }
           // End creating dummy data.
@@ -104,11 +106,19 @@ module.exports = {
 
                 opponent = opponentFinal;
 
-                alasql(`
-                    INSERT INTO ${j} VALUES ('', '${team}', '${date}', '${homeAway}', ${w}, ${l}, ${homeScore}, ${awayScore}, '${opponent}')
+                // gameHash contains date, H/A, W/L score, opponent.
+                // Should be pretty safe...
+                let gameHash = md5(finalRowData.join(''));
+                const gameExists = alasql(
+                  `SELECT gameHash FROM ${j} WHERE gameHash = '${gameHash}'`
+                );
+                if (gameExists.length === 0) {
+                  // Column info:
+                  // `INSERT INTO boys VALUES ('${team}', ${date}, ${homeAway}, ${wL}, ${homeScore}, ${awayScore}, ${opponent})`
+                  alasql(`
+                    INSERT INTO ${j} VALUES ('', '${team}', '${date}', '${homeAway}', ${w}, ${l}, ${homeScore}, ${awayScore}, '${opponent}', '${gameHash}')
                   `);
-
-                // `INSERT INTO boys VALUES ('${team}', ${date}, ${homeAway}, ${wL}, ${homeScore}, ${awayScore}, ${opponent})`
+                }
               } else {
                 error++;
                 // Log rows that don't fit. Use to check if the wrong rows are getting skipped.
