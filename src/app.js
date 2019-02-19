@@ -33,8 +33,7 @@ class App extends React.Component {
   updateData() {
     const getData = axios.get('http://localhost:8080/macs');
     getData.then(response => {
-      const [data] = response;
-
+      const { data } = response;
       this.setState({ boys: data[0], girls: data[1] });
 
       localStorage.setItem(
